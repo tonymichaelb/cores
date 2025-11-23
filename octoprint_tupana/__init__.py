@@ -78,12 +78,12 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
 
                 # version check: github repository
                 type="github_release",
-                user="seuusuario",
-                repo="OctoPrint-Tupana",
+                user="tonymichaelb",
+                repo="cores",
                 current=self._plugin_version,
 
                 # update method: pip
-                pip="https://github.com/seuusuario/OctoPrint-Tupana/archive/{target_version}.zip"
+                pip="https://github.com/tonymichaelb/cores/archive/{target_version}.zip"
             )
         )
 
