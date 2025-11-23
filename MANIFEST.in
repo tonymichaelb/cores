@@ -1,0 +1,4 @@
+include octoprint_tupana/templates/*.jinja2
+include octoprint_tupana/static/js/*.js
+include octoprint_tupana/static/css/*.css
+recursive-include octoprint_tupana/translations *

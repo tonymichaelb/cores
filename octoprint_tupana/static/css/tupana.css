@@ -1,0 +1,97 @@
+.tupana-container {
+    padding: 20px;
+}
+
+.tupana-content {
+    margin-top: 20px;
+}
+
+.tupana-content h4 {
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 2px solid #0088cc;
+    padding-bottom: 10px;
+}
+
+.tupana-content h5 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.tupana-preview {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.color-preview-container {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.color-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    border: 3px solid #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.color-preview:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.control-group {
+    margin-bottom: 20px;
+}
+
+.control-group label {
+    font-weight: bold;
+    color: #555;
+}
+
+#tupana-primary-color,
+#tupana-secondary-color,
+#tupana-tertiary-color {
+    width: 100px;
+    height: 40px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+#tupana-primary-color:hover,
+#tupana-secondary-color:hover,
+#tupana-tertiary-color:hover {
+    border-color: #0088cc;
+}
+
+#tupana-save-colors {
+    margin-right: 10px;
+}
+
+#tupana-save-colors i,
+#tupana-reset-colors i {
+    margin-right: 5px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .color-preview-container {
+        justify-content: center;
+    }
+    
+    .color-preview {
+        width: 80px;
+        height: 80px;
+    }
+}
