@@ -44,53 +44,45 @@ $(function() {
                 return;
             }
 
-            $.ajax({
-                url: API_BASEURL + "plugin/tupana/send_color",
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json; charset=UTF-8",
-                data: JSON.stringify({
-                    command: colorData.command
-                }),
-                success: function(response) {
-                    if (response.success) {
-                        self.statusMessage(colorData.name + " enviada: " + colorData.command);
-                        self.statusClass("alert-success");
-                        
-                        new PNotify({
-                            title: "Tupana",
-                            text: "Cor " + colorData.name + " aplicada com sucesso!",
-                            type: "success",
-                            hide: true
-                        });
-
-                        // Limpar mensagem após 3 segundos
-                        setTimeout(function() {
-                            self.statusMessage("");
-                        }, 3000);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    var errorMsg = "Erro ao enviar comando!";
-                    
-                    if (xhr.responseJSON && xhr.responseJSON.error) {
-                        if (xhr.responseJSON.error === "Printer not connected") {
-                            errorMsg = "Impressora não está conectada!";
-                        } else {
-                            errorMsg = xhr.responseJSON.error;
-                        }
-                    }
-                    
-                    self.statusMessage(errorMsg);
-                    self.statusClass("alert-error");
+            OctoPrint.simpleApiCommand("tupana", "send_color", {
+                command: colorData.command
+            }).done(function(response) {
+                if (response.success) {
+                    self.statusMessage(colorData.name + " enviada: " + colorData.command);
+                    self.statusClass("alert-success");
                     
                     new PNotify({
                         title: "Tupana",
-                        text: errorMsg,
-                        type: "error",
+                        text: "Cor " + colorData.name + " aplicada com sucesso!",
+                        type: "success",
                         hide: true
                     });
+
+                    // Limpar mensagem após 3 segundos
+                    setTimeout(function() {
+                        self.statusMessage("");
+                    }, 3000);
                 }
+            }).fail(function(xhr) {
+                var errorMsg = "Erro ao enviar comando!";
+                
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    if (xhr.responseJSON.error === "Printer not connected") {
+                        errorMsg = "Impressora não está conectada!";
+                    } else {
+                        errorMsg = xhr.responseJSON.error;
+                    }
+                }
+                
+                self.statusMessage(errorMsg);
+                self.statusClass("alert-error");
+                
+                new PNotify({
+                    title: "Tupana",
+                    text: errorMsg,
+                    type: "error",
+                    hide: true
+                });
             });
         };
 

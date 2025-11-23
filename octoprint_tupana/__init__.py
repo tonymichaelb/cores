@@ -8,7 +8,8 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
                    octoprint.plugin.AssetPlugin,
                    octoprint.plugin.TemplatePlugin,
                    octoprint.plugin.StartupPlugin,
-                   octoprint.plugin.BlueprintPlugin):
+                   octoprint.plugin.BlueprintPlugin,
+                   octoprint.plugin.SimpleApiPlugin):
 
     ##~~ SettingsPlugin mixin
 
@@ -58,30 +59,34 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
     def on_after_startup(self):
         self._logger.info("Tupana plugin iniciado!")
 
-    ##~~ BlueprintPlugin mixin
+    ##~~ SimpleApiPlugin mixin
 
-    @octoprint.plugin.BlueprintPlugin.route("/send_color", methods=["POST"])
-    def send_color(self):
-        try:
-            data = flask.request.json
-            command = data.get("command")
-            
-            if not command:
-                return flask.jsonify(dict(success=False, error="No command provided")), 400
-            
-            # Verificar se a impressora está conectada
-            if not self._printer.is_operational():
-                return flask.jsonify(dict(success=False, error="Printer not connected")), 409
-            
-            # Enviar comando para a impressora
-            self._printer.commands([command])
-            self._logger.info("Comando enviado: {}".format(command))
-            
-            return flask.jsonify(dict(success=True, command=command))
-            
-        except Exception as e:
-            self._logger.error("Erro ao enviar comando: {}".format(str(e)))
-            return flask.jsonify(dict(success=False, error=str(e))), 500
+    def get_api_commands(self):
+        return dict(
+            send_color=["command"]
+        )
+
+    def on_api_command(self, command, data):
+        if command == "send_color":
+            try:
+                gcode_command = data.get("command")
+                
+                if not gcode_command:
+                    return flask.jsonify(dict(success=False, error="No command provided")), 400
+                
+                # Verificar se a impressora está conectada
+                if not self._printer.is_operational():
+                    return flask.jsonify(dict(success=False, error="Printer not connected")), 409
+                
+                # Enviar comando para a impressora
+                self._printer.commands([gcode_command])
+                self._logger.info("Comando enviado: {}".format(gcode_command))
+                
+                return flask.jsonify(dict(success=True, command=gcode_command))
+                
+            except Exception as e:
+                self._logger.error("Erro ao enviar comando: {}".format(str(e)))
+                return flask.jsonify(dict(success=False, error=str(e))), 500
 
     ##~~ Softwareupdate hook
 
