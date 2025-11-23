@@ -49,11 +49,18 @@ $(function() {
             }
 
             var gcodeCommand = colorData.command;
-            console.log("Enviando comando:", gcodeCommand);
-
-            OctoPrint.simpleApiCommand("tupana", "send_color", {
+            console.log("=== DEBUG TUPANA ===");
+            console.log("colorData:", colorData);
+            console.log("colorData.command:", gcodeCommand);
+            console.log("Tipo:", typeof gcodeCommand);
+            
+            var payload = {
                 command: gcodeCommand
-            }).done(function(response) {
+            };
+            console.log("Payload a enviar:", payload);
+            console.log("Payload JSON:", JSON.stringify(payload));
+
+            OctoPrint.simpleApiCommand("tupana", "send_color", payload).done(function(response) {
                 if (response.success) {
                     self.statusMessage(colorData.name + " enviada: " + colorData.command);
                     self.statusClass("alert-success");
