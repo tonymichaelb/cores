@@ -70,17 +70,28 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
         self._logger.info("API Command recebido: {}".format(command))
         self._logger.info("Data type: {}".format(type(data)))
         self._logger.info("Data content: {}".format(data))
+        self._logger.info("Data keys: {}".format(data.keys() if hasattr(data, 'keys') else 'N/A'))
         self._logger.info("=" * 50)
         
         if command == "send_color":
             try:
-                gcode_command = data.get("command")
-                self._logger.info(">>> GCode extraído: '{}'".format(gcode_command))
+                # Tentar diferentes formas de acessar o comando
+                gcode_command = None
+                
+                if isinstance(data, dict):
+                    gcode_command = data.get("command")
+                    self._logger.info(">>> Tentativa 1 (dict.get): '{}'".format(gcode_command))
+                    
+                    if not gcode_command and "command" in data:
+                        gcode_command = data["command"]
+                        self._logger.info(">>> Tentativa 2 (dict[]): '{}'".format(gcode_command))
+                
+                self._logger.info(">>> GCode FINAL: '{}'".format(gcode_command))
                 self._logger.info(">>> Type: {}".format(type(gcode_command)))
                 
-                if not gcode_command:
-                    self._logger.error("!!! Nenhum comando fornecido!")
-                    return flask.jsonify(dict(success=False, error="No command provided")), 400
+                if not gcode_command or gcode_command == "send_color":
+                    self._logger.error("!!! Comando inválido ou vazio: '{}'".format(gcode_command))
+                    return flask.jsonify(dict(success=False, error="No valid command provided")), 400
                 
                 # Verificar se a impressora está conectada
                 if not self._printer.is_operational():
