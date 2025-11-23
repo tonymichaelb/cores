@@ -67,20 +67,26 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
         )
 
     def on_api_command(self, command, data):
+        self._logger.info("API Command recebido: {} | Data: {}".format(command, data))
+        
         if command == "send_color":
             try:
                 gcode_command = data.get("command")
+                self._logger.info("GCode extraído do data: {}".format(gcode_command))
                 
                 if not gcode_command:
+                    self._logger.error("Nenhum comando fornecido!")
                     return flask.jsonify(dict(success=False, error="No command provided")), 400
                 
                 # Verificar se a impressora está conectada
                 if not self._printer.is_operational():
+                    self._logger.warning("Impressora não está conectada!")
                     return flask.jsonify(dict(success=False, error="Printer not connected")), 409
                 
                 # Enviar comando para a impressora
+                self._logger.info("Enviando para impressora: [{}]".format(gcode_command))
                 self._printer.commands([gcode_command])
-                self._logger.info("Comando enviado: {}".format(gcode_command))
+                self._logger.info("Comando enviado com sucesso!")
                 
                 return flask.jsonify(dict(success=True, command=gcode_command))
                 
