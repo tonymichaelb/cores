@@ -1,5 +1,5 @@
 # Tupana - Plugin OctoPrint
-
+https://github.com/tonymichaelb/cores/archive/main.zip
 Plugin para gerenciamento de cores no OctoPrint.
 
 ## Descrição
