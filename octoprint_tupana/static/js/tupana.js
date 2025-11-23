@@ -35,8 +35,13 @@ $(function() {
         // Enviar comando de cor para a impressora
         self.sendColor = function(colorData) {
             console.log("sendColor chamado com:", colorData);
-            console.log("colorData.command:", colorData.command);
-            console.log("colorData.name:", colorData.name);
+            
+            // colorData vem direto do array, não são observables
+            var colorName = colorData.name;
+            var gcodeCommand = colorData.command;
+            
+            console.log("Nome da cor:", colorName);
+            console.log("Comando M182:", gcodeCommand);
             
             if (!self.loginState.isUser()) {
                 new PNotify({
@@ -47,10 +52,6 @@ $(function() {
                 });
                 return;
             }
-
-            var gcodeCommand = colorData.command;
-            console.log("=== DEBUG TUPANA ===");
-            console.log("Enviando comando M182:", gcodeCommand);
             
             $.ajax({
                 url: API_BASEURL + "api/plugin/tupana",
@@ -67,12 +68,12 @@ $(function() {
                 success: function(response) {
                     console.log("Resposta:", response);
                     if (response.success) {
-                        self.statusMessage(colorData.name + " enviada: " + colorData.command);
+                        self.statusMessage(colorName + " enviada: " + gcodeCommand);
                         self.statusClass("alert-success");
                         
                         new PNotify({
                             title: "Tupana",
-                            text: "Cor " + colorData.name + " aplicada: " + gcodeCommand,
+                            text: colorName + " aplicada: " + gcodeCommand,
                             type: "success",
                             hide: true
                         });
