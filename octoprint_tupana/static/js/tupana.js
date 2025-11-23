@@ -70,13 +70,23 @@ $(function() {
                         }, 3000);
                     }
                 },
-                error: function() {
-                    self.statusMessage("Erro ao enviar comando!");
+                error: function(xhr, status, error) {
+                    var errorMsg = "Erro ao enviar comando!";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        if (xhr.responseJSON.error === "Printer not connected") {
+                            errorMsg = "Impressora não está conectada!";
+                        } else {
+                            errorMsg = xhr.responseJSON.error;
+                        }
+                    }
+                    
+                    self.statusMessage(errorMsg);
                     self.statusClass("alert-error");
                     
                     new PNotify({
                         title: "Tupana",
-                        text: "Erro ao enviar comando para a impressora!",
+                        text: errorMsg,
                         type: "error",
                         hide: true
                     });

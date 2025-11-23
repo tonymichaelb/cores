@@ -62,11 +62,26 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
 
     @octoprint.plugin.BlueprintPlugin.route("/send_color", methods=["POST"])
     def send_color(self):
-        command = flask.request.json.get("command")
-        if command:
-            self._printer.commands(command)
-            return flask.jsonify(dict(success=True))
-        return flask.jsonify(dict(success=False, error="No command provided"))
+        try:
+            data = flask.request.json
+            command = data.get("command")
+            
+            if not command:
+                return flask.jsonify(dict(success=False, error="No command provided")), 400
+            
+            # Verificar se a impressora está conectada
+            if not self._printer.is_operational():
+                return flask.jsonify(dict(success=False, error="Printer not connected")), 409
+            
+            # Enviar comando para a impressora
+            self._printer.commands([command])
+            self._logger.info("Comando enviado: {}".format(command))
+            
+            return flask.jsonify(dict(success=True, command=command))
+            
+        except Exception as e:
+            self._logger.error("Erro ao enviar comando: {}".format(str(e)))
+            return flask.jsonify(dict(success=False, error=str(e))), 500
 
     ##~~ Softwareupdate hook
 
