@@ -3,113 +3,100 @@ $(function() {
         var self = this;
 
         self.settings = parameters[0];
+        self.loginState = parameters[1];
 
-        // Elementos de cores
-        self.primaryColor = ko.observable("#FF0000");
-        self.secondaryColor = ko.observable("#00FF00");
-        self.tertiaryColor = ko.observable("#0000FF");
+        // Array de cores com seus comandos M182
+        self.colors = ko.observableArray([
+            {name: "Cor 1", command: "M182 A100 B0 C0", color: "#FF0000"},
+            {name: "Cor 2", command: "M182 A0 B100 C0", color: "#00FF00"},
+            {name: "Cor 3", command: "M182 A0 B0 C100", color: "#0000FF"},
+            {name: "Cor 4", command: "M182 A20 B10 C70", color: "#3319B3"},
+            {name: "Cor 5", command: "M182 A70 B10 C20", color: "#B31933"},
+            {name: "Cor 6", command: "M182 A70 B20 C10", color: "#B33319"},
+            {name: "Cor 7", command: "M182 A90 B0 C10", color: "#E60019"},
+            {name: "Cor 8", command: "M182 A40 B0 C60", color: "#660099"},
+            {name: "Cor 9", command: "M182 A15 B0 C85", color: "#2600D9"},
+            {name: "Cor 10", command: "M182 A20 B10 C70", color: "#3319B3"},
+            {name: "Cor 11", command: "M182 A0 B40 C60", color: "#006699"},
+            {name: "Cor 12", command: "M182 A0 B25 C75", color: "#0040BF"},
+            {name: "Cor 13", command: "M182 A10 B80 C10", color: "#19CC19"},
+            {name: "Cor 14", command: "M182 A50 B50 C0", color: "#808000"},
+            {name: "Cor 15", command: "M182 A80 B0 C20", color: "#CC0033"},
+            {name: "Cor 16", command: "M182 A33 B33 C34", color: "#545557"},
+            {name: "Cor 17", command: "M182 A40 B20 C40", color: "#663366"},
+            {name: "Cor 18", command: "M182 A85 B0 C15", color: "#D90026"},
+            {name: "Cor 19", command: "M182 A20 B10 C70", color: "#3319B3"}
+        ]);
 
-        // Inicialização após o binding
-        self.onAfterBinding = function() {
-            // Carregar cores salvas
-            self.loadColors();
-            
-            // Event listeners para atualizar preview
-            $("#tupana-primary-color").on("change", function() {
-                self.primaryColor($(this).val());
-                self.updatePreview();
-            });
-            
-            $("#tupana-secondary-color").on("change", function() {
-                self.secondaryColor($(this).val());
-                self.updatePreview();
-            });
-            
-            $("#tupana-tertiary-color").on("change", function() {
-                self.tertiaryColor($(this).val());
-                self.updatePreview();
-            });
-            
-            // Botão salvar
-            $("#tupana-save-colors").on("click", function() {
-                self.saveColors();
-            });
-            
-            // Botão resetar
-            $("#tupana-reset-colors").on("click", function() {
-                self.resetColors();
-            });
-            
-            // Atualizar preview inicial
-            self.updatePreview();
-        };
+        // Status message
+        self.statusMessage = ko.observable("");
+        self.statusClass = ko.observable("");
 
-        // Atualizar visualização das cores
-        self.updatePreview = function() {
-            $("#preview-primary").css("background-color", self.primaryColor());
-            $("#preview-secondary").css("background-color", self.secondaryColor());
-            $("#preview-tertiary").css("background-color", self.tertiaryColor());
-        };
-
-        // Salvar cores
-        self.saveColors = function() {
-            var colors = {
-                primary: self.primaryColor(),
-                secondary: self.secondaryColor(),
-                tertiary: self.tertiaryColor()
-            };
-            
-            localStorage.setItem("tupana_colors", JSON.stringify(colors));
-            
-            new PNotify({
-                title: "Tupana",
-                text: "Cores salvas com sucesso!",
-                type: "success",
-                hide: true
-            });
-        };
-
-        // Carregar cores
-        self.loadColors = function() {
-            var savedColors = localStorage.getItem("tupana_colors");
-            if (savedColors) {
-                var colors = JSON.parse(savedColors);
-                self.primaryColor(colors.primary || "#FF0000");
-                self.secondaryColor(colors.secondary || "#00FF00");
-                self.tertiaryColor(colors.tertiary || "#0000FF");
-                
-                $("#tupana-primary-color").val(self.primaryColor());
-                $("#tupana-secondary-color").val(self.secondaryColor());
-                $("#tupana-tertiary-color").val(self.tertiaryColor());
-                
-                self.updatePreview();
+        // Enviar comando de cor para a impressora
+        self.sendColor = function(colorData) {
+            if (!self.loginState.isUser()) {
+                new PNotify({
+                    title: "Tupana",
+                    text: "Você precisa estar logado para enviar comandos!",
+                    type: "error",
+                    hide: true
+                });
+                return;
             }
+
+            $.ajax({
+                url: API_BASEURL + "plugin/tupana/send_color",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify({
+                    command: colorData.command
+                }),
+                success: function(response) {
+                    if (response.success) {
+                        self.statusMessage(colorData.name + " enviada: " + colorData.command);
+                        self.statusClass("alert-success");
+                        
+                        new PNotify({
+                            title: "Tupana",
+                            text: "Cor " + colorData.name + " aplicada com sucesso!",
+                            type: "success",
+                            hide: true
+                        });
+
+                        // Limpar mensagem após 3 segundos
+                        setTimeout(function() {
+                            self.statusMessage("");
+                        }, 3000);
+                    }
+                },
+                error: function() {
+                    self.statusMessage("Erro ao enviar comando!");
+                    self.statusClass("alert-error");
+                    
+                    new PNotify({
+                        title: "Tupana",
+                        text: "Erro ao enviar comando para a impressora!",
+                        type: "error",
+                        hide: true
+                    });
+                }
+            });
         };
 
-        // Resetar cores
-        self.resetColors = function() {
-            self.primaryColor("#FF0000");
-            self.secondaryColor("#00FF00");
-            self.tertiaryColor("#0000FF");
-            
-            $("#tupana-primary-color").val("#FF0000");
-            $("#tupana-secondary-color").val("#00FF00");
-            $("#tupana-tertiary-color").val("#0000FF");
-            
-            self.updatePreview();
-            
-            new PNotify({
-                title: "Tupana",
-                text: "Cores resetadas para o padrão!",
-                type: "info",
-                hide: true
-            });
+        // Inicialização
+        self.onBeforeBinding = function() {
+            // Carregar cores customizadas se existirem
+            var savedColors = self.settings.settings.plugins.tupana.colors();
+            if (savedColors && savedColors.length > 0) {
+                self.colors(savedColors);
+            }
         };
     }
 
     OCTOPRINT_VIEWMODELS.push({
         construct: TupanaViewModel,
-        dependencies: ["settingsViewModel"],
+        dependencies: ["settingsViewModel", "loginStateViewModel"],
         elements: ["#tab_plugin_tupana"]
     });
 });

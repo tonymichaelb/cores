@@ -1,51 +1,23 @@
 <div id="tab_plugin_tupana" class="tupana-container">
-    <h3>{{ _('Tupana - Cores') }}</h3>
+    <h3>{{ _('Tupana - Controle de Cores') }}</h3>
     
     <div class="tupana-content">
         <div class="row-fluid">
             <div class="span12">
-                <h4>{{ _('Gerenciamento de Cores') }}</h4>
-                <p>{{ _('Configure as cores da sua impressora aqui.') }}</p>
+                <h4>{{ _('Selecione uma Cor') }}</h4>
+                <p>{{ _('Clique em uma cor para enviar o comando M182 para a impressora.') }}</p>
                 
-                <div class="control-group">
-                    <label class="control-label">{{ _('Cor Primária') }}</label>
-                    <div class="controls">
-                        <input type="color" id="tupana-primary-color" value="#FF0000">
+                <div class="tupana-colors-grid" data-bind="foreach: colors">
+                    <div class="tupana-color-card" data-bind="click: $parent.sendColor, style: { backgroundColor: color }">
+                        <div class="tupana-color-overlay">
+                            <span class="tupana-color-name" data-bind="text: name"></span>
+                            <span class="tupana-color-command" data-bind="text: command"></span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="control-group">
-                    <label class="control-label">{{ _('Cor Secundária') }}</label>
-                    <div class="controls">
-                        <input type="color" id="tupana-secondary-color" value="#00FF00">
-                    </div>
-                </div>
-                
-                <div class="control-group">
-                    <label class="control-label">{{ _('Cor Terciária') }}</label>
-                    <div class="controls">
-                        <input type="color" id="tupana-tertiary-color" value="#0000FF">
-                    </div>
-                </div>
-                
-                <div class="control-group">
-                    <div class="controls">
-                        <button class="btn btn-primary" id="tupana-save-colors">
-                            <i class="fas fa-save"></i> {{ _('Salvar Cores') }}
-                        </button>
-                        <button class="btn" id="tupana-reset-colors">
-                            <i class="fas fa-undo"></i> {{ _('Resetar') }}
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="tupana-preview">
-                    <h5>{{ _('Visualização') }}</h5>
-                    <div class="color-preview-container">
-                        <div class="color-preview" id="preview-primary"></div>
-                        <div class="color-preview" id="preview-secondary"></div>
-                        <div class="color-preview" id="preview-tertiary"></div>
-                    </div>
+                <div class="tupana-status" data-bind="visible: statusMessage">
+                    <div class="alert" data-bind="css: statusClass, text: statusMessage"></div>
                 </div>
             </div>
         </div>

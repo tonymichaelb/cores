@@ -2,18 +2,40 @@
 from __future__ import absolute_import
 
 import octoprint.plugin
+import flask
 
 class TupanaPlugin(octoprint.plugin.SettingsPlugin,
                    octoprint.plugin.AssetPlugin,
                    octoprint.plugin.TemplatePlugin,
-                   octoprint.plugin.StartupPlugin):
+                   octoprint.plugin.StartupPlugin,
+                   octoprint.plugin.BlueprintPlugin):
 
     ##~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
         return dict(
-            # Adicione suas configurações padrão aqui
-            cores_enabled=True
+            cores_enabled=True,
+            colors=[
+                {"name": "Cor 1", "command": "M182 A100 B0 C0", "color": "#FF0000"},
+                {"name": "Cor 2", "command": "M182 A0 B100 C0", "color": "#00FF00"},
+                {"name": "Cor 3", "command": "M182 A0 B0 C100", "color": "#0000FF"},
+                {"name": "Cor 4", "command": "M182 A20 B10 C70", "color": "#3319B3"},
+                {"name": "Cor 5", "command": "M182 A70 B10 C20", "color": "#B31933"},
+                {"name": "Cor 6", "command": "M182 A70 B20 C10", "color": "#B33319"},
+                {"name": "Cor 7", "command": "M182 A90 B0 C10", "color": "#E60019"},
+                {"name": "Cor 8", "command": "M182 A40 B0 C60", "color": "#660099"},
+                {"name": "Cor 9", "command": "M182 A15 B0 C85", "color": "#2600D9"},
+                {"name": "Cor 10", "command": "M182 A20 B10 C70", "color": "#3319B3"},
+                {"name": "Cor 11", "command": "M182 A0 B40 C60", "color": "#006699"},
+                {"name": "Cor 12", "command": "M182 A0 B25 C75", "color": "#0040BF"},
+                {"name": "Cor 13", "command": "M182 A10 B80 C10", "color": "#19CC19"},
+                {"name": "Cor 14", "command": "M182 A50 B50 C0", "color": "#808000"},
+                {"name": "Cor 15", "command": "M182 A80 B0 C20", "color": "#CC0033"},
+                {"name": "Cor 16", "command": "M182 A33 B33 C34", "color": "#545557"},
+                {"name": "Cor 17", "command": "M182 A40 B20 C40", "color": "#663366"},
+                {"name": "Cor 18", "command": "M182 A85 B0 C15", "color": "#D90026"},
+                {"name": "Cor 19", "command": "M182 A20 B10 C70", "color": "#3319B3"}
+            ]
         )
 
     ##~~ AssetPlugin mixin
@@ -35,6 +57,16 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
 
     def on_after_startup(self):
         self._logger.info("Tupana plugin iniciado!")
+
+    ##~~ BlueprintPlugin mixin
+
+    @octoprint.plugin.BlueprintPlugin.route("/send_color", methods=["POST"])
+    def send_color(self):
+        command = flask.request.json.get("command")
+        if command:
+            self._printer.commands(command)
+            return flask.jsonify(dict(success=True))
+        return flask.jsonify(dict(success=False, error="No command provided"))
 
     ##~~ Softwareupdate hook
 

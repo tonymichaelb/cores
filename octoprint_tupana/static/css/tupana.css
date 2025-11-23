@@ -6,6 +6,11 @@
     margin-top: 20px;
 }
 
+.tupana-content h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
 .tupana-content h4 {
     margin-bottom: 15px;
     color: #333;
@@ -13,85 +18,117 @@
     padding-bottom: 10px;
 }
 
-.tupana-content h5 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    color: #555;
-}
-
-.tupana-preview {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: #f5f5f5;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-}
-
-.color-preview-container {
-    display: flex;
-    gap: 15px;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    margin-top: 15px;
-}
-
-.color-preview {
-    width: 100px;
-    height: 100px;
-    border-radius: 8px;
-    border: 3px solid #333;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease;
-}
-
-.color-preview:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.control-group {
+.tupana-content p {
+    color: #666;
     margin-bottom: 20px;
 }
 
-.control-group label {
-    font-weight: bold;
-    color: #555;
+/* Grid de cores */
+.tupana-colors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
 }
 
-#tupana-primary-color,
-#tupana-secondary-color,
-#tupana-tertiary-color {
-    width: 100px;
-    height: 40px;
-    border: 2px solid #ddd;
-    border-radius: 5px;
+.tupana-color-card {
+    position: relative;
+    height: 120px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: border-color 0.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 }
 
-#tupana-primary-color:hover,
-#tupana-secondary-color:hover,
-#tupana-tertiary-color:hover {
-    border-color: #0088cc;
+.tupana-color-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
-#tupana-save-colors {
-    margin-right: 10px;
+.tupana-color-card:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-#tupana-save-colors i,
-#tupana-reset-colors i {
-    margin-right: 5px;
+.tupana-color-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: background 0.3s ease;
+}
+
+.tupana-color-card:hover .tupana-color-overlay {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.tupana-color-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.tupana-color-command {
+    font-size: 11px;
+    font-family: monospace;
+    opacity: 0.9;
+}
+
+/* Status message */
+.tupana-status {
+    margin-top: 20px;
+}
+
+.tupana-status .alert {
+    padding: 12px 15px;
+    border-radius: 5px;
+    margin-bottom: 0;
+}
+
+.alert-success {
+    background-color: #dff0d8;
+    border: 1px solid #d6e9c6;
+    color: #3c763d;
+}
+
+.alert-error {
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+    color: #a94442;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .color-preview-container {
-        justify-content: center;
+    .tupana-colors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
     }
     
-    .color-preview {
-        width: 80px;
-        height: 80px;
+    .tupana-color-card {
+        height: 100px;
+    }
+    
+    .tupana-color-name {
+        font-size: 12px;
+    }
+    
+    .tupana-color-command {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tupana-colors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+    
+    .tupana-color-card {
+        height: 90px;
     }
 }
