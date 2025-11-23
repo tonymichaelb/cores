@@ -50,34 +50,39 @@ $(function() {
 
             var gcodeCommand = colorData.command;
             console.log("=== DEBUG TUPANA ===");
-            console.log("colorData:", colorData);
-            console.log("colorData.command:", gcodeCommand);
-            console.log("Tipo:", typeof gcodeCommand);
+            console.log("Enviando comando M182:", gcodeCommand);
             
-            var payload = {
-                command: gcodeCommand
-            };
-            console.log("Payload a enviar:", payload);
-            console.log("Payload JSON:", JSON.stringify(payload));
+            $.ajax({
+                url: API_BASEURL + "api/plugin/tupana",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                headers: {
+                    "X-Api-Key": UI_API_KEY
+                },
+                data: JSON.stringify({
+                    command: "send_color",
+                    gcode: gcodeCommand
+                }),
+                success: function(response) {
+                    console.log("Resposta:", response);
+                    if (response.success) {
+                        self.statusMessage(colorData.name + " enviada: " + colorData.command);
+                        self.statusClass("alert-success");
+                        
+                        new PNotify({
+                            title: "Tupana",
+                            text: "Cor " + colorData.name + " aplicada: " + gcodeCommand,
+                            type: "success",
+                            hide: true
+                        });
 
-            OctoPrint.simpleApiCommand("tupana", "send_color", payload).done(function(response) {
-                if (response.success) {
-                    self.statusMessage(colorData.name + " enviada: " + colorData.command);
-                    self.statusClass("alert-success");
-                    
-                    new PNotify({
-                        title: "Tupana",
-                        text: "Cor " + colorData.name + " aplicada com sucesso!",
-                        type: "success",
-                        hide: true
-                    });
-
-                    // Limpar mensagem após 3 segundos
-                    setTimeout(function() {
-                        self.statusMessage("");
-                    }, 3000);
-                }
-            }).fail(function(xhr) {
+                        setTimeout(function() {
+                            self.statusMessage("");
+                        }, 3000);
+                    }
+                },
+                error: function(xhr, status, error) {
                 var errorMsg = "Erro ao enviar comando!";
                 
                 if (xhr.responseJSON && xhr.responseJSON.error) {

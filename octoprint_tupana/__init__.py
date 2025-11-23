@@ -62,7 +62,7 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
 
     def get_api_commands(self):
         return dict(
-            send_color=["command"]
+            send_color=["gcode"]
         )
 
     def on_api_command(self, command, data):
@@ -75,16 +75,18 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
         
         if command == "send_color":
             try:
-                # Tentar diferentes formas de acessar o comando
+                # Procurar pelo parâmetro gcode
                 gcode_command = None
                 
                 if isinstance(data, dict):
-                    gcode_command = data.get("command")
-                    self._logger.info(">>> Tentativa 1 (dict.get): '{}'".format(gcode_command))
+                    # Tentar 'gcode' primeiro (novo formato)
+                    gcode_command = data.get("gcode")
+                    self._logger.info(">>> Tentativa 1 (gcode): '{}'".format(gcode_command))
                     
-                    if not gcode_command and "command" in data:
-                        gcode_command = data["command"]
-                        self._logger.info(">>> Tentativa 2 (dict[]): '{}'".format(gcode_command))
+                    # Fallback para 'command' (compatibilidade)
+                    if not gcode_command:
+                        gcode_command = data.get("command")
+                        self._logger.info(">>> Tentativa 2 (command): '{}'".format(gcode_command))
                 
                 self._logger.info(">>> GCode FINAL: '{}'".format(gcode_command))
                 self._logger.info(">>> Type: {}".format(type(gcode_command)))
