@@ -8,7 +8,6 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
                    octoprint.plugin.AssetPlugin,
                    octoprint.plugin.TemplatePlugin,
                    octoprint.plugin.StartupPlugin,
-                   octoprint.plugin.BlueprintPlugin,
                    octoprint.plugin.SimpleApiPlugin):
 
     ##~~ SettingsPlugin mixin
@@ -67,26 +66,31 @@ class TupanaPlugin(octoprint.plugin.SettingsPlugin,
         )
 
     def on_api_command(self, command, data):
-        self._logger.info("API Command recebido: {} | Data: {}".format(command, data))
+        self._logger.info("=" * 50)
+        self._logger.info("API Command recebido: {}".format(command))
+        self._logger.info("Data type: {}".format(type(data)))
+        self._logger.info("Data content: {}".format(data))
+        self._logger.info("=" * 50)
         
         if command == "send_color":
             try:
                 gcode_command = data.get("command")
-                self._logger.info("GCode extraído do data: {}".format(gcode_command))
+                self._logger.info(">>> GCode extraído: '{}'".format(gcode_command))
+                self._logger.info(">>> Type: {}".format(type(gcode_command)))
                 
                 if not gcode_command:
-                    self._logger.error("Nenhum comando fornecido!")
+                    self._logger.error("!!! Nenhum comando fornecido!")
                     return flask.jsonify(dict(success=False, error="No command provided")), 400
                 
                 # Verificar se a impressora está conectada
                 if not self._printer.is_operational():
-                    self._logger.warning("Impressora não está conectada!")
+                    self._logger.warning("!!! Impressora não está conectada!")
                     return flask.jsonify(dict(success=False, error="Printer not connected")), 409
                 
                 # Enviar comando para a impressora
-                self._logger.info("Enviando para impressora: [{}]".format(gcode_command))
-                self._printer.commands([gcode_command])
-                self._logger.info("Comando enviado com sucesso!")
+                self._logger.info(">>> ENVIANDO PARA PRINTER: '{}'".format(gcode_command))
+                self._printer.commands([str(gcode_command)])
+                self._logger.info(">>> COMANDO ENVIADO!")
                 
                 return flask.jsonify(dict(success=True, command=gcode_command))
                 
