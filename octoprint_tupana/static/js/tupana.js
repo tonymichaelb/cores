@@ -34,6 +34,10 @@ $(function() {
 
         // Enviar comando de cor para a impressora
         self.sendColor = function(colorData) {
+            console.log("sendColor chamado com:", colorData);
+            console.log("colorData.command:", colorData.command);
+            console.log("colorData.name:", colorData.name);
+            
             if (!self.loginState.isUser()) {
                 new PNotify({
                     title: "Tupana",
@@ -44,8 +48,11 @@ $(function() {
                 return;
             }
 
+            var gcodeCommand = colorData.command;
+            console.log("Enviando comando:", gcodeCommand);
+
             OctoPrint.simpleApiCommand("tupana", "send_color", {
-                command: colorData.command
+                command: gcodeCommand
             }).done(function(response) {
                 if (response.success) {
                     self.statusMessage(colorData.name + " enviada: " + colorData.command);
